@@ -119,6 +119,14 @@ module.exports = {
   createRecord,
   updateRecord,
   getStats,
-  documentExists,
-  clearAll
+  documentExists,`r`n  findByDocument,`r`n  clearAll
 };
+function findByDocument(documento) {
+  return db.prepare(`
+    SELECT *
+    FROM registros
+    WHERE documento = ?
+  `).get(String(documento).trim());
+}
+
+
