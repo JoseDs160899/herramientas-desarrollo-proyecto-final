@@ -1,0 +1,2723 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<title>RegistraU | Proyecto Final</title>
+
+<style>
+
+:root {
+    --primary: #7c1d3c;
+    --primary-dark: #4d1028;
+    --secondary: #d4a017;
+    --blue: #102a43;
+    --blue-light: #1f4e79;
+
+    --bg: #080b12;
+    --surface: #101622;
+    --surface-2: #161d2b;
+
+    --text: #f7f8fa;
+    --muted: #a9b1bf;
+
+    --success: #36d399;
+    --danger: #ff6b6b;
+
+    --radius: 22px;
+}
+
+
+/* ==============================
+   RESET
+================================ */
+
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+html,
+body {
+    width: 100%;
+    height: 100%;
+    overflow: hidden;
+}
+
+body {
+    font-family:
+        Inter,
+        ui-sans-serif,
+        system-ui,
+        -apple-system,
+        BlinkMacSystemFont,
+        "Segoe UI",
+        sans-serif;
+
+    background:
+        radial-gradient(
+            circle at 15% 20%,
+            rgba(124, 29, 60, .20),
+            transparent 30%
+        ),
+        radial-gradient(
+            circle at 85% 80%,
+            rgba(31, 78, 121, .20),
+            transparent 30%
+        ),
+        var(--bg);
+
+    color: var(--text);
+}
+
+
+/* ==============================
+   PRESENTATION
+================================ */
+
+.presentation {
+    width: 100vw;
+    height: 100vh;
+    position: relative;
+}
+
+
+/* ==============================
+   SLIDE
+================================ */
+
+.slide {
+    position: absolute;
+
+    width: 100%;
+    height: 100%;
+
+    inset: 0;
+
+    padding:
+        clamp(35px, 5vw, 80px)
+        clamp(40px, 7vw, 120px)
+        100px;
+
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+
+    opacity: 0;
+    visibility: hidden;
+
+    transform: translateX(40px) scale(.98);
+
+    transition:
+        opacity .5s ease,
+        transform .5s ease,
+        visibility .5s;
+
+    overflow: hidden;
+}
+
+.slide.active {
+    opacity: 1;
+    visibility: visible;
+    transform: translateX(0) scale(1);
+}
+
+
+/* ==============================
+   BACKGROUND DECORATION
+================================ */
+
+.slide::before {
+    content: "";
+
+    position: absolute;
+
+    width: 400px;
+    height: 400px;
+
+    border-radius: 50%;
+
+    background:
+        radial-gradient(
+            circle,
+            rgba(124,29,60,.20),
+            transparent 70%
+        );
+
+    top: -180px;
+    right: -120px;
+
+    pointer-events: none;
+}
+
+.slide::after {
+    content: "";
+
+    position: absolute;
+
+    width: 300px;
+    height: 300px;
+
+    border-radius: 50%;
+
+    background:
+        radial-gradient(
+            circle,
+            rgba(31,78,121,.14),
+            transparent 70%
+        );
+
+    bottom: -150px;
+    left: -100px;
+
+    pointer-events: none;
+}
+
+
+/* ==============================
+   TOP BAR
+================================ */
+
+.top-bar {
+    position: absolute;
+
+    top: 28px;
+    left: clamp(40px, 7vw, 120px);
+    right: clamp(40px, 7vw, 120px);
+
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+
+    z-index: 5;
+}
+
+.brand {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+
+    font-weight: 700;
+    font-size: 14px;
+
+    letter-spacing: .04em;
+
+    color: #fff;
+}
+
+.brand-mark {
+    width: 30px;
+    height: 30px;
+
+    border-radius: 8px;
+
+    background:
+        linear-gradient(
+            135deg,
+            var(--primary),
+            var(--secondary)
+        );
+
+    display: grid;
+    place-items: center;
+
+    font-size: 13px;
+    font-weight: 900;
+}
+
+.slide-number {
+    font-size: 13px;
+    color: var(--muted);
+}
+
+
+/* ==============================
+   TYPOGRAPHY
+================================ */
+
+.kicker {
+    text-transform: uppercase;
+
+    letter-spacing: .16em;
+
+    color: var(--secondary);
+
+    font-weight: 800;
+
+    font-size: 12px;
+
+    margin-bottom: 14px;
+}
+
+h1 {
+    font-size:
+        clamp(48px, 7vw, 100px);
+
+    line-height: .95;
+
+    letter-spacing: -.05em;
+
+    max-width: 1000px;
+}
+
+h2 {
+    font-size:
+        clamp(36px, 5vw, 70px);
+
+    line-height: 1;
+
+    letter-spacing: -.04em;
+
+    margin-bottom: 24px;
+}
+
+h3 {
+    font-size: 22px;
+
+    margin-bottom: 10px;
+}
+
+.subtitle {
+    color: var(--muted);
+
+    font-size:
+        clamp(16px, 2vw, 22px);
+
+    line-height: 1.6;
+
+    max-width: 800px;
+}
+
+.highlight {
+    color: var(--secondary);
+}
+
+.red {
+    color: #e96a89;
+}
+
+
+/* ==============================
+   BUTTONS
+================================ */
+
+.controls {
+    position: fixed;
+
+    bottom: 28px;
+    right: 30px;
+
+    display: flex;
+    gap: 8px;
+
+    z-index: 100;
+}
+
+.control-btn {
+    width: 44px;
+    height: 44px;
+
+    border: 1px solid rgba(255,255,255,.12);
+
+    background:
+        rgba(16,22,34,.82);
+
+    backdrop-filter: blur(12px);
+
+    color: white;
+
+    border-radius: 12px;
+
+    cursor: pointer;
+
+    font-size: 18px;
+
+    transition: .2s;
+}
+
+.control-btn:hover {
+    background: var(--primary);
+
+    transform: translateY(-2px);
+}
+
+
+/* ==============================
+   PROGRESS
+================================ */
+
+.progress {
+    position: fixed;
+
+    left: 0;
+    bottom: 0;
+
+    height: 4px;
+
+    background:
+        linear-gradient(
+            90deg,
+            var(--primary),
+            var(--secondary)
+        );
+
+    width: 0%;
+
+    z-index: 100;
+
+    transition: width .4s ease;
+}
+
+
+/* ==============================
+   GRID
+================================ */
+
+.grid {
+    display: grid;
+
+    grid-template-columns:
+        repeat(
+            auto-fit,
+            minmax(220px, 1fr)
+        );
+
+    gap: 18px;
+
+    width: 100%;
+
+    max-width: 1200px;
+}
+
+
+/* ==============================
+   CARDS
+================================ */
+
+.card {
+    background:
+        linear-gradient(
+            145deg,
+            rgba(255,255,255,.07),
+            rgba(255,255,255,.025)
+        );
+
+    border: 1px solid rgba(255,255,255,.09);
+
+    border-radius: var(--radius);
+
+    padding: 26px;
+
+    backdrop-filter: blur(14px);
+
+    box-shadow:
+        0 20px 60px rgba(0,0,0,.22);
+
+    transition: .3s;
+}
+
+.card:hover {
+    transform: translateY(-5px);
+
+    border-color:
+        rgba(212,160,23,.35);
+}
+
+.card-icon {
+    width: 48px;
+    height: 48px;
+
+    border-radius: 14px;
+
+    background:
+        rgba(124,29,60,.25);
+
+    display: grid;
+    place-items: center;
+
+    font-size: 23px;
+
+    margin-bottom: 20px;
+}
+
+.card p {
+    color: var(--muted);
+
+    line-height: 1.6;
+
+    font-size: 14px;
+}
+
+
+/* ==============================
+   COVER
+================================ */
+
+.cover {
+    justify-content: center;
+}
+
+.cover-content {
+    max-width: 1100px;
+
+    position: relative;
+
+    z-index: 2;
+}
+
+.cover h1 {
+    max-width: 950px;
+}
+
+.cover-line {
+    width: 90px;
+    height: 5px;
+
+    border-radius: 10px;
+
+    background:
+        linear-gradient(
+            90deg,
+            var(--primary),
+            var(--secondary)
+        );
+
+    margin:
+        30px 0;
+}
+
+.team {
+    margin-top: 45px;
+
+    display: flex;
+
+    flex-wrap: wrap;
+
+    gap: 10px;
+}
+
+.member {
+    background:
+        rgba(255,255,255,.06);
+
+    border: 1px solid rgba(255,255,255,.08);
+
+    border-radius: 50px;
+
+    padding: 9px 15px;
+
+    font-size: 13px;
+
+    color: #dfe4eb;
+}
+
+
+/* ==============================
+   PROBLEM
+================================ */
+
+.problem-layout {
+    display: grid;
+
+    grid-template-columns:
+        1.1fr .9fr;
+
+    gap: 60px;
+
+    align-items: center;
+}
+
+.problem-box {
+    padding: 40px;
+
+    border-radius: 30px;
+
+    background:
+        linear-gradient(
+            135deg,
+            rgba(124,29,60,.32),
+            rgba(124,29,60,.08)
+        );
+
+    border:
+        1px solid rgba(233,106,137,.18);
+}
+
+.problem-list {
+    display: flex;
+
+    flex-direction: column;
+
+    gap: 15px;
+}
+
+.problem-item {
+    display: flex;
+
+    align-items: center;
+
+    gap: 15px;
+
+    color: #d9dee7;
+}
+
+.problem-item span {
+    width: 32px;
+    height: 32px;
+
+    flex-shrink: 0;
+
+    border-radius: 10px;
+
+    display: grid;
+
+    place-items: center;
+
+    background:
+        rgba(255,107,107,.12);
+
+    color: #ff8585;
+}
+
+
+/* ==============================
+   OBJECTIVES
+================================ */
+
+.objective {
+    display: flex;
+
+    gap: 15px;
+
+    align-items: flex-start;
+}
+
+.objective-number {
+    width: 40px;
+    height: 40px;
+
+    border-radius: 12px;
+
+    background:
+        var(--primary);
+
+    display: grid;
+    place-items: center;
+
+    font-weight: 800;
+
+    flex-shrink: 0;
+}
+
+.objective p {
+    color: var(--muted);
+
+    line-height: 1.5;
+
+    font-size: 14px;
+}
+
+
+/* ==============================
+   ARCHITECTURE
+================================ */
+
+.architecture {
+    display: grid;
+
+    grid-template-columns:
+        repeat(4, 1fr);
+
+    gap: 12px;
+
+    margin-top: 20px;
+
+    max-width: 1200px;
+}
+
+.arch-box {
+    min-height: 180px;
+
+    border-radius: 20px;
+
+    padding: 25px;
+
+    display: flex;
+
+    flex-direction: column;
+
+    justify-content: center;
+
+    text-align: center;
+
+    background:
+        var(--surface);
+
+    border:
+        1px solid rgba(255,255,255,.09);
+
+    position: relative;
+}
+
+.arch-box:not(:last-child)::after {
+    content: "→";
+
+    position: absolute;
+
+    right: -22px;
+
+    top: 50%;
+
+    transform:
+        translateY(-50%);
+
+    color: var(--secondary);
+
+    font-size: 25px;
+
+    z-index: 2;
+}
+
+.arch-icon {
+    font-size: 36px;
+
+    margin-bottom: 15px;
+}
+
+.arch-box strong {
+    margin-bottom: 8px;
+}
+
+.arch-box span {
+    color: var(--muted);
+
+    font-size: 13px;
+}
+
+
+/* ==============================
+   STACK
+================================ */
+
+.stack {
+    display: flex;
+
+    flex-wrap: wrap;
+
+    gap: 12px;
+
+    margin-top: 30px;
+}
+
+.tech {
+    padding: 12px 18px;
+
+    border-radius: 12px;
+
+    background:
+        rgba(255,255,255,.06);
+
+    border:
+        1px solid rgba(255,255,255,.08);
+
+    font-weight: 600;
+
+    font-size: 14px;
+}
+
+
+/* ==============================
+   GIT FLOW
+================================ */
+
+.git-flow {
+    display: flex;
+
+    align-items: center;
+
+    gap: 10px;
+
+    max-width: 1150px;
+
+    margin-top: 30px;
+
+    flex-wrap: wrap;
+}
+
+.git-step {
+    padding: 20px;
+
+    min-width: 150px;
+
+    border-radius: 16px;
+
+    background:
+        var(--surface);
+
+    border:
+        1px solid rgba(255,255,255,.09);
+
+    text-align: center;
+}
+
+.git-step strong {
+    display: block;
+
+    margin-bottom: 6px;
+}
+
+.git-step span {
+    color: var(--muted);
+
+    font-size: 12px;
+}
+
+.git-arrow {
+    color: var(--secondary);
+
+    font-size: 24px;
+}
+
+
+/* ==============================
+   TEAM
+================================ */
+
+.team-table {
+    width: 100%;
+
+    max-width: 1200px;
+
+    border-collapse: collapse;
+
+    overflow: hidden;
+
+    border-radius: 18px;
+
+    background:
+        rgba(255,255,255,.03);
+}
+
+.team-table th {
+    background:
+        var(--primary);
+
+    padding: 16px;
+
+    text-align: left;
+
+    font-size: 13px;
+}
+
+.team-table td {
+    padding: 15px 16px;
+
+    border-bottom:
+        1px solid rgba(255,255,255,.06);
+
+    color: #dce1e8;
+
+    font-size: 13px;
+}
+
+.team-table tr:last-child td {
+    border-bottom: none;
+}
+
+.branch {
+    color: var(--secondary);
+
+    font-family: monospace;
+
+    font-size: 12px;
+}
+
+
+/* ==============================
+   ROADMAP
+================================ */
+
+.timeline {
+    display: grid;
+
+    grid-template-columns:
+        repeat(4, 1fr);
+
+    gap: 15px;
+
+    max-width: 1200px;
+
+    margin-top: 30px;
+}
+
+.timeline-item {
+    position: relative;
+
+    padding: 25px;
+
+    min-height: 190px;
+
+    border-radius: 20px;
+
+    background:
+        linear-gradient(
+            145deg,
+            rgba(255,255,255,.07),
+            rgba(255,255,255,.025)
+        );
+
+    border:
+        1px solid rgba(255,255,255,.08);
+}
+
+.timeline-week {
+    font-size: 12px;
+
+    color: var(--secondary);
+
+    font-weight: 800;
+
+    text-transform: uppercase;
+
+    letter-spacing: .1em;
+
+    margin-bottom: 15px;
+}
+
+.timeline-item h3 {
+    font-size: 18px;
+}
+
+.timeline-item p {
+    color: var(--muted);
+
+    font-size: 13px;
+
+    line-height: 1.6;
+}
+
+
+/* ==============================
+   EVIDENCE
+================================ */
+
+.evidence {
+    display: grid;
+
+    grid-template-columns:
+        repeat(4, 1fr);
+
+    gap: 15px;
+
+    max-width: 1100px;
+}
+
+.evidence-card {
+    text-align: center;
+
+    padding: 25px;
+
+    background:
+        var(--surface);
+
+    border-radius: 20px;
+
+    border:
+        1px solid rgba(255,255,255,.08);
+}
+
+.evidence-number {
+    font-size: 34px;
+
+    font-weight: 900;
+
+    color: var(--secondary);
+
+    margin-bottom: 12px;
+}
+
+.evidence-card p {
+    color: var(--muted);
+
+    font-size: 13px;
+
+    line-height: 1.5;
+}
+
+
+/* ==============================
+   FINAL
+================================ */
+
+.final {
+    text-align: center;
+
+    align-items: center;
+}
+
+.final h2 {
+    max-width: 900px;
+}
+
+.github {
+    display: inline-flex;
+
+    margin-top: 30px;
+
+    padding: 15px 22px;
+
+    border-radius: 14px;
+
+    background:
+        var(--primary);
+
+    color: white;
+
+    text-decoration: none;
+
+    font-weight: 700;
+
+    transition: .2s;
+}
+
+.github:hover {
+    transform: translateY(-3px);
+
+    background:
+        var(--primary-dark);
+}
+
+
+/* ==============================
+   NOTES
+================================ */
+
+.hint {
+    position: fixed;
+
+    bottom: 32px;
+    left: 30px;
+
+    color: #778091;
+
+    font-size: 11px;
+
+    z-index: 100;
+}
+
+
+/* ==============================
+   ANIMATIONS
+================================ */
+
+.slide.active .animate {
+    animation:
+        fadeUp .7s ease both;
+}
+
+.slide.active .animate:nth-child(2) {
+    animation-delay: .1s;
+}
+
+.slide.active .animate:nth-child(3) {
+    animation-delay: .2s;
+}
+
+.slide.active .animate:nth-child(4) {
+    animation-delay: .3s;
+}
+
+.slide.active .animate:nth-child(5) {
+    animation-delay: .4s;
+}
+
+@keyframes fadeUp {
+
+    from {
+        opacity: 0;
+
+        transform:
+            translateY(20px);
+    }
+
+    to {
+        opacity: 1;
+
+        transform:
+            translateY(0);
+    }
+
+}
+
+
+/* ==============================
+   RESPONSIVE
+================================ */
+
+@media (max-width: 900px) {
+
+    .problem-layout {
+        grid-template-columns: 1fr;
+        gap: 25px;
+    }
+
+    .architecture {
+        grid-template-columns:
+            repeat(2, 1fr);
+    }
+
+    .arch-box:not(:last-child)::after {
+        display: none;
+    }
+
+    .timeline {
+        grid-template-columns:
+            repeat(2, 1fr);
+    }
+
+    .evidence {
+        grid-template-columns:
+            repeat(2, 1fr);
+    }
+
+    .team-table {
+        font-size: 11px;
+    }
+
+}
+
+@media (max-width: 600px) {
+
+    .slide {
+        padding:
+            65px 25px 80px;
+    }
+
+    .top-bar {
+        left: 25px;
+        right: 25px;
+    }
+
+    .grid {
+        grid-template-columns: 1fr;
+    }
+
+    .architecture {
+        grid-template-columns: 1fr;
+    }
+
+    .timeline {
+        grid-template-columns: 1fr;
+    }
+
+    .evidence {
+        grid-template-columns: 1fr;
+    }
+
+    .hint {
+        display: none;
+    }
+
+}
+
+</style>
+</head>
+
+
+<body>
+
+
+<div class="presentation" id="presentation">
+
+
+<!-- =========================================================
+     SLIDE 1
+========================================================= -->
+
+<section class="slide active cover">
+
+    <div class="top-bar">
+        <div class="brand">
+            <div class="brand-mark">U</div>
+            UTP · HERRAMIENTAS DE DESARROLLO
+        </div>
+
+        <div class="slide-number">
+            01 / 12
+        </div>
+    </div>
+
+
+    <div class="cover-content">
+
+        <div class="kicker animate">
+            Avance de Proyecto Final · 2026-II
+        </div>
+
+        <h1 class="animate">
+            Registra<span class="highlight">U</span>
+        </h1>
+
+        <div class="cover-line animate"></div>
+
+        <p class="subtitle animate">
+            Sistema web para registro y gestión
+            de estudiantes o postulantes.
+        </p>
+
+
+        <div class="team animate">
+
+            <div class="member">
+                Jose Miguel Tenorio Cartagena
+            </div>
+
+            <div class="member">
+                Juan Carlos Quirita Llasa
+            </div>
+
+            <div class="member">
+                Victor Hugo Briceño Rodriguez
+            </div>
+
+            <div class="member">
+                Ronald Copaticona Nolasco
+            </div>
+
+        </div>
+
+    </div>
+
+</section>
+
+
+
+<!-- =========================================================
+     SLIDE 2
+========================================================= -->
+
+<section class="slide">
+
+    <div class="top-bar">
+
+        <div class="brand">
+            REGISTRAU
+        </div>
+
+        <div class="slide-number">
+            02 / 12
+        </div>
+
+    </div>
+
+
+    <div class="kicker animate">
+        01 · Introducción
+    </div>
+
+    <h2 class="animate">
+        Un solo sistema.<br>
+        <span class="highlight">
+            Información centralizada.
+        </span>
+    </h2>
+
+    <p class="subtitle animate">
+
+        RegistraU es una aplicación web orientada al
+        registro y gestión básica de estudiantes o postulantes.
+
+        El proyecto se mantiene sobre un mismo código,
+        repositorio y documentación durante el semestre.
+
+    </p>
+
+
+    <div class="grid animate"
+         style="margin-top:35px;">
+
+        <div class="card">
+
+            <div class="card-icon">
+                📋
+            </div>
+
+            <h3>
+                Registro
+            </h3>
+
+            <p>
+                Crear fichas con información personal
+                y de contacto.
+            </p>
+
+        </div>
+
+
+        <div class="card">
+
+            <div class="card-icon">
+                🔎
+            </div>
+
+            <h3>
+                Consulta
+            </h3>
+
+            <p>
+                Localizar y consultar fichas almacenadas
+                en el sistema.
+            </p>
+
+        </div>
+
+
+        <div class="card">
+
+            <div class="card-icon">
+                🔄
+            </div>
+
+            <h3>
+                Actualización
+            </h3>
+
+            <p>
+                Modificar información existente
+                sin generar duplicados.
+            </p>
+
+        </div>
+
+    </div>
+
+</section>
+
+
+
+<!-- =========================================================
+     SLIDE 3
+========================================================= -->
+
+<section class="slide">
+
+    <div class="top-bar">
+
+        <div class="brand">
+            PROBLEMA
+        </div>
+
+        <div class="slide-number">
+            03 / 12
+        </div>
+
+    </div>
+
+
+    <div class="problem-layout">
+
+        <div>
+
+            <div class="kicker animate">
+                02 · Planteamiento del problema
+            </div>
+
+            <h2 class="animate">
+                La información
+                <span class="red">
+                    está dispersa.
+                </span>
+            </h2>
+
+            <p class="subtitle animate">
+
+                En procesos de admisión de pequeña escala,
+                los datos pueden quedar distribuidos entre
+                formularios, hojas de cálculo y mensajes.
+
+            </p>
+
+        </div>
+
+
+        <div class="problem-box animate">
+
+            <div class="problem-list">
+
+                <div class="problem-item">
+                    <span>!</span>
+                    Datos duplicados
+                </div>
+
+                <div class="problem-item">
+                    <span>!</span>
+                    Campos incompletos
+                </div>
+
+                <div class="problem-item">
+                    <span>!</span>
+                    Errores de digitación
+                </div>
+
+                <div class="problem-item">
+                    <span>!</span>
+                    Dificultad para localizar fichas
+                </div>
+
+            </div>
+
+        </div>
+
+    </div>
+
+</section>
+
+
+
+<!-- =========================================================
+     SLIDE 4
+========================================================= -->
+
+<section class="slide">
+
+    <div class="top-bar">
+
+        <div class="brand">
+            OBJETIVOS
+        </div>
+
+        <div class="slide-number">
+            04 / 12
+        </div>
+
+    </div>
+
+
+    <div class="kicker animate">
+        03 · Objetivos
+    </div>
+
+    <h2 class="animate">
+        ¿Qué queremos
+        <span class="highlight">
+            lograr?
+        </span>
+    </h2>
+
+
+    <div class="grid animate"
+         style="margin-top:20px;">
+
+        <div class="card objective">
+
+            <div class="objective-number">
+                01
+            </div>
+
+            <div>
+
+                <h3>
+                    Gestión de fichas
+                </h3>
+
+                <p>
+                    Registrar, consultar y actualizar
+                    información con validaciones básicas.
+                </p>
+
+            </div>
+
+        </div>
+
+
+        <div class="card objective">
+
+            <div class="objective-number">
+                02
+            </div>
+
+            <div>
+
+                <h3>
+                    Arquitectura
+                </h3>
+
+                <p>
+                    Separar interfaz, backend y persistencia
+                    en una estructura mantenible.
+                </p>
+
+            </div>
+
+        </div>
+
+
+        <div class="card objective">
+
+            <div class="objective-number">
+                03
+            </div>
+
+            <div>
+
+                <h3>
+                    Git
+                </h3>
+
+                <p>
+                    Trabajar con ramas, commits,
+                    merges y resolución de conflictos.
+                </p>
+
+            </div>
+
+        </div>
+
+
+        <div class="card objective">
+
+            <div class="objective-number">
+                04
+            </div>
+
+            <div>
+
+                <h3>
+                    Evolución
+                </h3>
+
+                <p>
+                    Llevar el mismo repositorio hacia
+                    CI/CD, nube y contenedores.
+                </p>
+
+            </div>
+
+        </div>
+
+    </div>
+
+</section>
+
+
+
+<!-- =========================================================
+     SLIDE 5
+========================================================= -->
+
+<section class="slide">
+
+    <div class="top-bar">
+
+        <div class="brand">
+            ALCANCE
+        </div>
+
+        <div class="slide-number">
+            05 / 12
+        </div>
+
+    </div>
+
+
+    <div class="kicker animate">
+        04 · Alcance del sistema
+    </div>
+
+    <h2 class="animate">
+        Pequeño en alcance.
+        <span class="highlight">
+            Claro en propósito.
+        </span>
+    </h2>
+
+
+    <div class="grid animate">
+
+        <div class="card">
+
+            <div class="card-icon">
+                ✓
+            </div>
+
+            <h3>
+                Incluye
+            </h3>
+
+            <p>
+
+                Registro de datos personales
+                y de contacto.
+
+                <br><br>
+
+                Consulta y localización
+                de fichas.
+
+                <br><br>
+
+                Actualización de información.
+
+                <br><br>
+
+                Validaciones básicas
+                y documento único.
+
+            </p>
+
+        </div>
+
+
+        <div class="card">
+
+            <div class="card-icon">
+                ×
+            </div>
+
+            <h3>
+                No incluye por ahora
+            </h3>
+
+            <p>
+
+                Autenticación avanzada
+                o perfiles complejos.
+
+                <br><br>
+
+                Reportes analíticos
+                o exportaciones avanzadas.
+
+                <br><br>
+
+                Integraciones institucionales.
+
+                <br><br>
+
+                Arquitectura de alta disponibilidad.
+
+            </p>
+
+        </div>
+
+    </div>
+
+</section>
+
+
+
+<!-- =========================================================
+     SLIDE 6
+========================================================= -->
+
+<section class="slide">
+
+    <div class="top-bar">
+
+        <div class="brand">
+            FUNCIONALIDADES
+        </div>
+
+        <div class="slide-number">
+            06 / 12
+        </div>
+
+    </div>
+
+
+    <div class="kicker animate">
+        05 · Funcionalidades principales
+    </div>
+
+    <h2 class="animate">
+        Cuatro funcionalidades
+        <span class="highlight">
+            esenciales.
+        </span>
+    </h2>
+
+
+    <div class="grid animate">
+
+        <div class="card">
+
+            <div class="card-icon">
+                F-01
+            </div>
+
+            <h3>
+                Registrar ficha
+            </h3>
+
+            <p>
+                Crear una ficha válida
+                dentro del sistema.
+            </p>
+
+        </div>
+
+
+        <div class="card">
+
+            <div class="card-icon">
+                F-02
+            </div>
+
+            <h3>
+                Consultar registros
+            </h3>
+
+            <p>
+                Mostrar fichas
+                almacenadas.
+            </p>
+
+        </div>
+
+
+        <div class="card">
+
+            <div class="card-icon">
+                F-03
+            </div>
+
+            <h3>
+                Actualizar información
+            </h3>
+
+            <p>
+                Editar una ficha
+                sin duplicarla.
+            </p>
+
+        </div>
+
+
+        <div class="card">
+
+            <div class="card-icon">
+                F-04
+            </div>
+
+            <h3>
+                Validar datos
+            </h3>
+
+            <p>
+                Rechazar datos
+                inválidos o repetidos.
+            </p>
+
+        </div>
+
+    </div>
+
+</section>
+
+
+
+<!-- =========================================================
+     SLIDE 7
+========================================================= -->
+
+<section class="slide">
+
+    <div class="top-bar">
+
+        <div class="brand">
+            ARQUITECTURA
+        </div>
+
+        <div class="slide-number">
+            07 / 12
+        </div>
+
+    </div>
+
+
+    <div class="kicker animate">
+        06 · Diseño y arquitectura
+    </div>
+
+    <h2 class="animate">
+        Arquitectura
+        <span class="highlight">
+            propuesta
+        </span>
+    </h2>
+
+
+    <div class="architecture animate">
+
+        <div class="arch-box">
+
+            <div class="arch-icon">
+                🖥️
+            </div>
+
+            <strong>
+                Interfaz
+            </strong>
+
+            <span>
+                HTML5 · CSS3 · JavaScript
+            </span>
+
+        </div>
+
+
+        <div class="arch-box">
+
+            <div class="arch-icon">
+                ⚙️
+            </div>
+
+            <strong>
+                Backend
+            </strong>
+
+            <span>
+                Node.js · Express
+            </span>
+
+        </div>
+
+
+        <div class="arch-box">
+
+            <div class="arch-icon">
+                🗄️
+            </div>
+
+            <strong>
+                Base de datos
+            </strong>
+
+            <span>
+                SQLite
+            </span>
+
+        </div>
+
+
+        <div class="arch-box">
+
+            <div class="arch-icon">
+                🌿
+            </div>
+
+            <strong>
+                Control de versiones
+            </strong>
+
+            <span>
+                Git · Repositorio remoto
+            </span>
+
+        </div>
+
+    </div>
+
+
+    <div class="stack animate">
+
+        <div class="tech">
+            HTML5
+        </div>
+
+        <div class="tech">
+            CSS3
+        </div>
+
+        <div class="tech">
+            JavaScript
+        </div>
+
+        <div class="tech">
+            Node.js
+        </div>
+
+        <div class="tech">
+            Express
+        </div>
+
+        <div class="tech">
+            SQLite
+        </div>
+
+        <div class="tech">
+            Git
+        </div>
+
+    </div>
+
+</section>
+
+
+
+<!-- =========================================================
+     SLIDE 8
+========================================================= -->
+
+<section class="slide">
+
+    <div class="top-bar">
+
+        <div class="brand">
+            GIT
+        </div>
+
+        <div class="slide-number">
+            08 / 12
+        </div>
+
+    </div>
+
+
+    <div class="kicker animate">
+        07 · Desarrollo colaborativo
+    </div>
+
+    <h2 class="animate">
+        Git como
+        <span class="highlight">
+            mecanismo de trazabilidad.
+        </span>
+    </h2>
+
+
+    <p class="subtitle animate">
+
+        Cada integrante trabaja en una rama con propósito
+        explícito, registra commits descriptivos y sincroniza
+        sus cambios con el repositorio remoto.
+
+    </p>
+
+
+    <div class="git-flow animate">
+
+        <div class="git-step">
+
+            <strong>
+                main
+            </strong>
+
+            <span>
+                Versión estable
+            </span>
+
+        </div>
+
+        <div class="git-arrow">
+            →
+        </div>
+
+
+        <div class="git-step">
+
+            <strong>
+                feature/*
+            </strong>
+
+            <span>
+                Desarrollo
+            </span>
+
+        </div>
+
+        <div class="git-arrow">
+            →
+        </div>
+
+
+        <div class="git-step">
+
+            <strong>
+                Commit
+            </strong>
+
+            <span>
+                Cambio descriptivo
+            </span>
+
+        </div>
+
+        <div class="git-arrow">
+            →
+        </div>
+
+
+        <div class="git-step">
+
+            <strong>
+                Merge
+            </strong>
+
+            <span>
+                Integración
+            </span>
+
+        </div>
+
+        <div class="git-arrow">
+            →
+        </div>
+
+
+        <div class="git-step">
+
+            <strong>
+                Remote
+            </strong>
+
+            <span>
+                Sincronización
+            </span>
+
+        </div>
+
+    </div>
+
+</section>
+
+
+
+<!-- =========================================================
+     SLIDE 9
+========================================================= -->
+
+<section class="slide">
+
+    <div class="top-bar">
+
+        <div class="brand">
+            EQUIPO
+        </div>
+
+        <div class="slide-number">
+            09 / 12
+        </div>
+
+    </div>
+
+
+    <div class="kicker animate">
+        08 · Distribución técnica
+    </div>
+
+    <h2 class="animate">
+        Cuatro integrantes.
+        <span class="highlight">
+            Cuatro responsabilidades.
+        </span>
+    </h2>
+
+
+    <table class="team-table animate">
+
+        <thead>
+
+            <tr>
+
+                <th>
+                    Integrante
+                </th>
+
+                <th>
+                    Rama
+                </th>
+
+                <th>
+                    Aporte
+                </th>
+
+            </tr>
+
+        </thead>
+
+
+        <tbody>
+
+            <tr>
+
+                <td>
+                    Jose Miguel Tenorio
+                </td>
+
+                <td class="branch">
+                    feature/registro-formulario
+                </td>
+
+                <td>
+                    Backend · API de registros
+                </td>
+
+            </tr>
+
+
+            <tr>
+
+                <td>
+                    Juan Carlos Quirita
+                </td>
+
+                <td class="branch">
+                    feature/api-registro
+                </td>
+
+                <td>
+                    Ruta y controlador
+                </td>
+
+            </tr>
+
+
+            <tr>
+
+                <td>
+                    Victor Hugo Briceño
+                </td>
+
+                <td class="branch">
+                    feature/persistencia-consulta
+                </td>
+
+                <td>
+                    SQLite y consulta
+                </td>
+
+            </tr>
+
+
+            <tr>
+
+                <td>
+                    Ronald Copaticona
+                </td>
+
+                <td class="branch">
+                    feature/edicion-registro
+                </td>
+
+                <td>
+                    Edición y pruebas
+                </td>
+
+            </tr>
+
+        </tbody>
+
+    </table>
+
+</section>
+
+
+
+<!-- =========================================================
+     SLIDE 10
+========================================================= -->
+
+<section class="slide">
+
+    <div class="top-bar">
+
+        <div class="brand">
+            EVIDENCIAS
+        </div>
+
+        <div class="slide-number">
+            10 / 12
+        </div>
+
+    </div>
+
+
+    <div class="kicker animate">
+        09 · Evidencias de participación
+    </div>
+
+    <h2 class="animate">
+        El desarrollo debe ser
+        <span class="highlight">
+            verificable.
+        </span>
+    </h2>
+
+
+    <div class="evidence animate">
+
+        <div class="evidence-card">
+
+            <div class="evidence-number">
+                E-01
+            </div>
+
+            <h3>
+                Estructura
+            </h3>
+
+            <p>
+                README e instrucciones
+                de ejecución.
+            </p>
+
+        </div>
+
+
+        <div class="evidence-card">
+
+            <div class="evidence-number">
+                E-02
+            </div>
+
+            <h3>
+                Commits
+            </h3>
+
+            <p>
+                Participación individual
+                y ramas reales.
+            </p>
+
+        </div>
+
+
+        <div class="evidence-card">
+
+            <div class="evidence-number">
+                E-03
+            </div>
+
+            <h3>
+                Merge
+            </h3>
+
+            <p>
+                Integración y conflicto
+                resuelto.
+            </p>
+
+        </div>
+
+
+        <div class="evidence-card">
+
+            <div class="evidence-number">
+                E-04
+            </div>
+
+            <h3>
+                Remoto
+            </h3>
+
+            <p>
+                Pull, push y repositorio
+                actualizado.
+            </p>
+
+        </div>
+
+    </div>
+
+
+    <p class="subtitle animate"
+       style="margin-top:30px;">
+
+        Las capturas utilizadas en la entrega deben corresponder
+        a evidencias reales del repositorio y las herramientas utilizadas.
+
+    </p>
+
+</section>
+
+
+
+<!-- =========================================================
+     SLIDE 11
+========================================================= -->
+
+<section class="slide">
+
+    <div class="top-bar">
+
+        <div class="brand">
+            ROADMAP
+        </div>
+
+        <div class="slide-number">
+            11 / 12
+        </div>
+
+    </div>
+
+
+    <div class="kicker animate">
+        10 · Ruta hacia el proyecto final
+    </div>
+
+    <h2 class="animate">
+        RegistraU
+        <span class="highlight">
+            evoluciona.
+        </span>
+    </h2>
+
+
+    <div class="timeline animate">
+
+        <div class="timeline-item">
+
+            <div class="timeline-week">
+                Semana 6
+            </div>
+
+            <h3>
+                APF1
+            </h3>
+
+            <p>
+                Base funcional, ramas,
+                commits, merge,
+                conflicto y remoto.
+            </p>
+
+        </div>
+
+
+        <div class="timeline-item">
+
+            <div class="timeline-week">
+                Semana 11
+            </div>
+
+            <h3>
+                APF2
+            </h3>
+
+            <p>
+                Mejora funcional,
+                Pull Requests,
+                revisión y release.
+            </p>
+
+        </div>
+
+
+        <div class="timeline-item">
+
+            <div class="timeline-week">
+                Semana 15
+            </div>
+
+            <h3>
+                APF3
+            </h3>
+
+            <p>
+                Incidencias,
+                CI/CD y primera
+                ejecución en nube.
+            </p>
+
+        </div>
+
+
+        <div class="timeline-item">
+
+            <div class="timeline-week">
+                Semana 18
+            </div>
+
+            <h3>
+                Proyecto Final
+            </h3>
+
+            <p>
+                Aplicación consolidada,
+                contenedor, despliegue
+                y release final.
+            </p>
+
+        </div>
+
+    </div>
+
+</section>
+
+
+
+<!-- =========================================================
+     SLIDE 12
+========================================================= -->
+
+<section class="slide final">
+
+    <div class="top-bar">
+
+        <div class="brand">
+            REGISTRAU
+        </div>
+
+        <div class="slide-number">
+            12 / 12
+        </div>
+
+    </div>
+
+
+    <div class="kicker animate">
+        Cierre
+    </div>
+
+
+    <h2 class="animate">
+
+        Un mismo producto.
+        <br>
+
+        Una evolución
+        <span class="highlight">
+            continua.
+        </span>
+
+    </h2>
+
+
+    <p class="subtitle animate">
+
+        RegistraU comienza con una base funcional
+        y trazable para evolucionar progresivamente
+        hacia colaboración avanzada, CI/CD, nube,
+        contenedores y despliegue final.
+
+    </p>
+
+
+    <a
+        class="github animate"
+        href="https://github.com/JoseDs160899/herramientas-desarrollo-proyecto-final"
+        target="_blank"
+    >
+
+        Ver repositorio en GitHub →
+
+    </a>
+
+</section>
+
+
+
+</div>
+
+
+
+<!-- ==============================
+     CONTROLS
+================================ -->
+
+<div class="controls">
+
+    <button
+        class="control-btn"
+        onclick="previousSlide()"
+        title="Anterior"
+    >
+        ←
+    </button>
+
+
+    <button
+        class="control-btn"
+        onclick="nextSlide()"
+        title="Siguiente"
+    >
+        →
+    </button>
+
+
+    <button
+        class="control-btn"
+        onclick="toggleFullscreen()"
+        title="Pantalla completa"
+    >
+        ⛶
+    </button>
+
+</div>
+
+
+<div class="hint">
+    ← → Navegar · Espacio Avanzar · F Pantalla completa
+</div>
+
+
+<div
+    class="progress"
+    id="progress"
+></div>
+
+
+
+<script>
+
+/* ========================================
+   PRESENTATION ENGINE
+======================================== */
+
+const slides =
+    document.querySelectorAll(".slide");
+
+let currentSlide = 0;
+
+
+/* ----------------------------------------
+   UPDATE
+---------------------------------------- */
+
+function updatePresentation() {
+
+    slides.forEach((slide, index) => {
+
+        slide.classList.toggle(
+            "active",
+            index === currentSlide
+        );
+
+    });
+
+
+    const progress =
+        ((currentSlide + 1) / slides.length) * 100;
+
+    document
+        .getElementById("progress")
+        .style.width = progress + "%";
+
+}
+
+
+/* ----------------------------------------
+   NEXT
+---------------------------------------- */
+
+function nextSlide() {
+
+    if (currentSlide < slides.length - 1) {
+
+        currentSlide++;
+
+        updatePresentation();
+
+    }
+
+}
+
+
+/* ----------------------------------------
+   PREVIOUS
+---------------------------------------- */
+
+function previousSlide() {
+
+    if (currentSlide > 0) {
+
+        currentSlide--;
+
+        updatePresentation();
+
+    }
+
+}
+
+
+/* ----------------------------------------
+   KEYBOARD
+---------------------------------------- */
+
+document.addEventListener(
+    "keydown",
+    function(event) {
+
+        switch (event.key) {
+
+            case "ArrowRight":
+            case "ArrowDown":
+            case " ":
+
+                event.preventDefault();
+
+                nextSlide();
+
+                break;
+
+
+            case "ArrowLeft":
+            case "ArrowUp":
+
+                event.preventDefault();
+
+                previousSlide();
+
+                break;
+
+
+            case "f":
+            case "F":
+
+                toggleFullscreen();
+
+                break;
+
+
+            case "Home":
+
+                currentSlide = 0;
+
+                updatePresentation();
+
+                break;
+
+
+            case "End":
+
+                currentSlide =
+                    slides.length - 1;
+
+                updatePresentation();
+
+                break;
+
+        }
+
+    }
+);
+
+
+/* ----------------------------------------
+   FULLSCREEN
+---------------------------------------- */
+
+function toggleFullscreen() {
+
+    if (!document.fullscreenElement) {
+
+        document.documentElement
+            .requestFullscreen()
+            .catch(() => {});
+
+    } else {
+
+        document.exitFullscreen();
+
+    }
+
+}
+
+
+/* ----------------------------------------
+   TOUCH / SWIPE
+---------------------------------------- */
+
+let touchStartX = 0;
+
+let touchEndX = 0;
+
+
+document.addEventListener(
+    "touchstart",
+    event => {
+
+        touchStartX =
+            event.changedTouches[0].screenX;
+
+    }
+);
+
+
+document.addEventListener(
+    "touchend",
+    event => {
+
+        touchEndX =
+            event.changedTouches[0].screenX;
+
+        handleSwipe();
+
+    }
+);
+
+
+function handleSwipe() {
+
+    const distance =
+        touchEndX - touchStartX;
+
+
+    if (Math.abs(distance) < 50) {
+        return;
+    }
+
+
+    if (distance < 0) {
+
+        nextSlide();
+
+    } else {
+
+        previousSlide();
+
+    }
+
+}
+
+
+/* ----------------------------------------
+   CLICK
+---------------------------------------- */
+
+document.addEventListener(
+    "click",
+    event => {
+
+        if (
+            event.target.closest(
+                "button, a"
+            )
+        ) {
+
+            return;
+
+        }
+
+
+        const width =
+            window.innerWidth;
+
+        if (event.clientX > width / 2) {
+
+            nextSlide();
+
+        } else {
+
+            previousSlide();
+
+        }
+
+    }
+);
+
+
+/* ----------------------------------------
+   INIT
+---------------------------------------- */
+
+updatePresentation();
+
+</script>
+
+
+</body>
+</html>
