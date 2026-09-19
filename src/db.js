@@ -207,6 +207,32 @@ function clearAll() {
     WHERE name = 'registros';
   `);
 }
+function updateRecord(id, data) {
+  const stmt = db.prepare(`
+    UPDATE registros
+    SET nombres = ?,
+        apellidos = ?,
+        documento = ?,
+        correo = ?,
+        telefono = ?,
+        condicion = ?,
+        programa = ?,
+        observaciones = ?,
+        actualizado_en = datetime('now', 'localtime')
+    WHERE id = ?
+  `);
+  return stmt.run(
+    data.nombres,
+    data.apellidos,
+    data.documento,
+    data.correo,
+    data.telefono,
+    data.condicion,
+    data.programa,
+    data.observaciones,
+    Number(id)
+  );
+}
 
 module.exports = {
   DB_PATH,
@@ -219,3 +245,4 @@ module.exports = {
   documentExists,
   clearAll
 };
+
