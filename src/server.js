@@ -190,3 +190,24 @@ try {
   if (error.code !== 'MODULE_NOT_FOUND') throw error;
   startNative();
 }
+
+app.put('/api/registros/:id', (req, res) => {
+  try {
+    const { id } = req.params;
+    const datos = req.body;
+
+    if (!datos.nombres || !datos.apellidos || !datos.documento) {
+      return res.status(400).json({ error: 'Nombres, apellidos y documento son obligatorios' });
+    }
+
+    const resultado = updateRecord(id, datos);
+
+    if (resultado.changes === 0) {
+      return res.status(404).json({ error: 'Registro no encontrado' });
+    }
+
+    return res.status(200).json({ mensaje: 'Ficha actualizada exitosamente' });
+  } catch (error) {
+    return res.status(500).json({ error: 'Error al actualizar el registro' });
+  }
+});
