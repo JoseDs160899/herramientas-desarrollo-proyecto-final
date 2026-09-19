@@ -1,0 +1,20 @@
+{
+  "name": "registrau-apf1",
+  "version": "0.1.0",
+  "description": "RegistraU - sistema web para registro y gestión básica de estudiantes o postulantes. Proyecto APF1.",
+  "main": "src/server.js",
+  "type": "commonjs",
+  "scripts": {
+    "start": "node --no-warnings src/server.js",
+    "dev": "node --no-warnings --watch src/server.js",
+    "seed": "node --no-warnings scripts/seed.js",
+    "reset-db": "node --no-warnings scripts/reset-db.js",
+    "test": "node --no-warnings --test tests/*.test.js"
+  },
+  "engines": {
+    "node": ">=22.5.0"
+  },
+  "dependencies": {
+    "express": "^5.1.0"
+  }
+}
