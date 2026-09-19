@@ -8,7 +8,9 @@ const DATA_DIR = path.join(__dirname, '..', 'data');
 const DB_PATH = path.join(DATA_DIR, 'registrau.db');
 
 fs.mkdirSync(DATA_DIR, { recursive: true });
+
 const db = new DatabaseSync(DB_PATH);
+
 db.exec('PRAGMA foreign_keys = ON;');
 db.exec('PRAGMA journal_mode = WAL;');
 
@@ -27,35 +29,67 @@ db.exec(`
     actualizado_en TEXT NOT NULL DEFAULT (datetime('now','localtime'))
   );
 
-  CREATE INDEX IF NOT EXISTS idx_registros_nombre ON registros(apellidos, nombres);
-  CREATE INDEX IF NOT EXISTS idx_registros_correo ON registros(correo);
+  CREATE INDEX IF NOT EXISTS idx_registros_nombre
+  ON registros(apellidos, nombres);
+
+  CREATE INDEX IF NOT EXISTS idx_registros_correo
+  ON registros(correo);
 `);
 
 function listRecords(search = '') {
   const q = String(search || '').trim();
+
   if (!q) {
     return db.prepare(`
-      SELECT * FROM registros
+      SELECT *
+      FROM registros
       ORDER BY datetime(actualizado_en) DESC, id DESC
     `).all();
   }
+
   const like = `%${q}%`;
+
   return db.prepare(`
-    SELECT * FROM registros
-    WHERE nombres LIKE ? OR apellidos LIKE ? OR documento LIKE ? OR correo LIKE ? OR programa LIKE ?
+    SELECT *
+    FROM registros
+    WHERE nombres LIKE ?
+       OR apellidos LIKE ?
+       OR documento LIKE ?
+       OR correo LIKE ?
+       OR programa LIKE ?
     ORDER BY datetime(actualizado_en) DESC, id DESC
   `).all(like, like, like, like, like);
 }
 
 function getRecord(id) {
-  return db.prepare('SELECT * FROM registros WHERE id = ?').get(Number(id));
+  return db
+    .prepare('SELECT * FROM registros WHERE id = ?')
+    .get(Number(id));
+}
+
+function findByDocument(documento) {
+  return db.prepare(`
+    SELECT *
+    FROM registros
+    WHERE documento = ?
+  `).get(String(documento).trim());
 }
 
 function createRecord(data) {
   const stmt = db.prepare(`
-    INSERT INTO registros (nombres, apellidos, documento, correo, telefono, condicion, programa, observaciones)
+    INSERT INTO registros (
+      nombres,
+      apellidos,
+      documento,
+      correo,
+      telefono,
+      condicion,
+      programa,
+      observaciones
+    )
     VALUES (?, ?, ?, ?, ?, ?, ?, ?)
   `);
+
   const result = stmt.run(
     data.nombres,
     data.apellidos,
@@ -66,17 +100,28 @@ function createRecord(data) {
     data.programa,
     data.observaciones
   );
+
   return getRecord(result.lastInsertRowid);
 }
 
 function updateRecord(id, data) {
   const exists = getRecord(id);
-  if (!exists) return null;
+
+  if (!exists) {
+    return null;
+  }
 
   db.prepare(`
     UPDATE registros
-    SET nombres = ?, apellidos = ?, documento = ?, correo = ?, telefono = ?, condicion = ?,
-        programa = ?, observaciones = ?, actualizado_en = datetime('now','localtime')
+    SET nombres = ?,
+        apellidos = ?,
+        documento = ?,
+        correo = ?,
+        telefono = ?,
+        condicion = ?,
+        programa = ?,
+        observaciones = ?,
+        actualizado_en = datetime('now','localtime')
     WHERE id = ?
   `).run(
     data.nombres,
@@ -94,28 +139,80 @@ function updateRecord(id, data) {
 }
 
 function getStats() {
-  const total = db.prepare('SELECT COUNT(*) AS n FROM registros').get().n;
-  const estudiantes = db.prepare("SELECT COUNT(*) AS n FROM registros WHERE condicion='ESTUDIANTE'").get().n;
-  const postulantes = db.prepare("SELECT COUNT(*) AS n FROM registros WHERE condicion='POSTULANTE'").get().n;
-  const hoy = db.prepare("SELECT COUNT(*) AS n FROM registros WHERE date(creado_en)=date('now','localtime')").get().n;
-  return { total, estudiantes, postulantes, hoy };
+  const total = db
+    .prepare('SELECT COUNT(*) AS n FROM registros')
+    .get().n;
+
+  const estudiantes = db
+    .prepare(`
+      SELECT COUNT(*) AS n
+      FROM registros
+      WHERE condicion = 'ESTUDIANTE'
+    `)
+    .get().n;
+
+  const postulantes = db
+    .prepare(`
+      SELECT COUNT(*) AS n
+      FROM registros
+      WHERE condicion = 'POSTULANTE'
+    `)
+    .get().n;
+
+  const hoy = db
+    .prepare(`
+      SELECT COUNT(*) AS n
+      FROM registros
+      WHERE date(creado_en) = date('now','localtime')
+    `)
+    .get().n;
+
+  return {
+    total,
+    estudiantes,
+    postulantes,
+    hoy
+  };
 }
 
 function documentExists(documento, excludeId = null) {
   if (excludeId) {
-    return Boolean(db.prepare('SELECT 1 FROM registros WHERE documento = ? AND id <> ?').get(documento, Number(excludeId)));
+    return Boolean(
+      db
+        .prepare(`
+          SELECT 1
+          FROM registros
+          WHERE documento = ?
+            AND id <> ?
+        `)
+        .get(documento, Number(excludeId))
+    );
   }
-  return Boolean(db.prepare('SELECT 1 FROM registros WHERE documento = ?').get(documento));
+
+  return Boolean(
+    db
+      .prepare(`
+        SELECT 1
+        FROM registros
+        WHERE documento = ?
+      `)
+      .get(documento)
+  );
 }
 
 function clearAll() {
-  db.exec("DELETE FROM registros; DELETE FROM sqlite_sequence WHERE name='registros';");
+  db.exec(`
+    DELETE FROM registros;
+    DELETE FROM sqlite_sequence
+    WHERE name = 'registros';
+  `);
 }
 
 module.exports = {
   DB_PATH,
   listRecords,
   getRecord,
+  findByDocument,
   createRecord,
   updateRecord,
   getStats,
