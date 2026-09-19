@@ -1,0 +1,130 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>RegistraU — Gestión de fichas</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,400;0,9..40,500;0,9..40,600;0,9..40,700;1,9..40,400&family=Fraunces:opsz,wght@9..144,600;9..144,700&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="/styles.css" />
+</head>
+<body>
+  <div class="page">
+    <header class="top">
+      <div class="brand">
+        <p class="brand-mark">RegistraU</p>
+        <p class="brand-tag">Registro de estudiantes y postulantes</p>
+      </div>
+      <div class="stats" id="stats" aria-live="polite">
+        <div class="stat"><span class="stat-n" data-stat="total">0</span><span class="stat-l">Total</span></div>
+        <div class="stat"><span class="stat-n" data-stat="estudiantes">0</span><span class="stat-l">Estudiantes</span></div>
+        <div class="stat"><span class="stat-n" data-stat="postulantes">0</span><span class="stat-l">Postulantes</span></div>
+        <div class="stat"><span class="stat-n" data-stat="hoy">0</span><span class="stat-l">Hoy</span></div>
+      </div>
+    </header>
+
+    <main class="layout">
+      <section class="panel form-panel" aria-labelledby="form-title">
+        <div class="panel-head">
+          <h1 id="form-title">Nueva ficha</h1>
+          <button type="button" class="linkish" id="btn-cancel" hidden>Cancelar edición</button>
+        </div>
+
+        <div class="toast" id="toast" hidden role="status"></div>
+
+        <form id="form-registro" novalidate>
+          <input type="hidden" id="record-id" value="" />
+
+          <div class="grid-2">
+            <label class="field">
+              <span>Nombres *</span>
+              <input name="nombres" id="nombres" maxlength="80" autocomplete="given-name" required />
+              <small class="err" data-error="nombres"></small>
+            </label>
+            <label class="field">
+              <span>Apellidos *</span>
+              <input name="apellidos" id="apellidos" maxlength="80" autocomplete="family-name" required />
+              <small class="err" data-error="apellidos"></small>
+            </label>
+          </div>
+
+          <div class="grid-2">
+            <label class="field">
+              <span>Documento *</span>
+              <input name="documento" id="documento" inputmode="numeric" maxlength="12" required />
+              <small class="err" data-error="documento"></small>
+            </label>
+            <label class="field">
+              <span>Correo *</span>
+              <input name="correo" id="correo" type="email" maxlength="120" autocomplete="email" required />
+              <small class="err" data-error="correo"></small>
+            </label>
+          </div>
+
+          <div class="grid-2">
+            <label class="field">
+              <span>Teléfono</span>
+              <input name="telefono" id="telefono" inputmode="tel" maxlength="20" autocomplete="tel" />
+              <small class="err" data-error="telefono"></small>
+            </label>
+            <label class="field">
+              <span>Condición *</span>
+              <select name="condicion" id="condicion" required>
+                <option value="">Seleccione…</option>
+                <option value="ESTUDIANTE">Estudiante</option>
+                <option value="POSTULANTE">Postulante</option>
+              </select>
+              <small class="err" data-error="condicion"></small>
+            </label>
+          </div>
+
+          <label class="field">
+            <span>Programa</span>
+            <input name="programa" id="programa" maxlength="120" />
+            <small class="err" data-error="programa"></small>
+          </label>
+
+          <label class="field">
+            <span>Observaciones</span>
+            <textarea name="observaciones" id="observaciones" rows="3" maxlength="500"></textarea>
+            <small class="err" data-error="observaciones"></small>
+          </label>
+
+          <div class="actions">
+            <button type="submit" class="btn primary" id="btn-submit">Guardar ficha</button>
+            <button type="reset" class="btn ghost" id="btn-reset">Limpiar</button>
+          </div>
+        </form>
+      </section>
+
+      <section class="panel list-panel" aria-labelledby="list-title">
+        <div class="panel-head">
+          <h2 id="list-title">Registros</h2>
+          <label class="search">
+            <span class="sr-only">Buscar</span>
+            <input type="search" id="search" placeholder="Buscar por nombre, documento, correo…" />
+          </label>
+        </div>
+        <div class="table-wrap">
+          <table>
+            <thead>
+              <tr>
+                <th>Persona</th>
+                <th>Documento</th>
+                <th>Condición</th>
+                <th>Programa</th>
+                <th></th>
+              </tr>
+            </thead>
+            <tbody id="tbody">
+              <tr class="empty"><td colspan="5">Cargando…</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </section>
+    </main>
+  </div>
+  <script src="/app.js" defer></script>
+</body>
+</html>
