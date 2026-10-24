@@ -45,9 +45,14 @@ async function handleApi(method, pathname, query, payload) {
     return apiResult(200, getStats());
   }
 
-  if (method === 'GET' && pathname === '/api/registros') {
-    return apiResult(200, { items: listRecords(query.get('search') || '') });
-  }
+if (method === 'GET' && pathname === '/api/registros') {
+  return apiResult(200, {
+    items: listRecords(query.get('search') || '', {
+      condicion: query.get('condicion') || '',
+      programa: query.get('programa') || ''
+    })
+  });
+}
 
   const match = pathname.match(/^\/api\/registros\/(\d+)$/);
   if (method === 'GET' && match) {

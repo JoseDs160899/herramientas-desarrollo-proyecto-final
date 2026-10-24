@@ -36,29 +36,52 @@ db.exec(`
   ON registros(correo);
 `);
 
-function listRecords(search = '') {
-  const q = String(search || '').trim();
+function listRecords(search = '', filters = {}) {
+  const text = String(search || '').trim();
+  const condicion = String(filters.condicion || '').trim();
+  const programa = String(filters.programa || '').trim();
 
-  if (!q) {
-    return db.prepare(`
-      SELECT *
-      FROM registros
-      ORDER BY datetime(actualizado_en) DESC, id DESC
-    `).all();
+  const conditions = [];
+  const params = [];
+
+  if (text) {
+    conditions.push(`(
+      nombres LIKE ? OR
+      apellidos LIKE ? OR
+      documento LIKE ? OR
+      correo LIKE ? OR
+      programa LIKE ?
+    )`);
+
+    const pattern = `%${text}%`;
+
+    params.push(pattern, pattern, pattern, pattern, pattern);
   }
 
-  const like = `%${q}%`;
+  if (condicion) {
+    if (!['ESTUDIANTE', 'POSTULANTE'].includes(condicion)) {
+      throw new Error('Condición de filtro no válida.');
+    }
+
+    conditions.push('condicion = ?');
+    params.push(condicion);
+  }
+
+  if (programa) {
+    conditions.push('programa LIKE ?');
+    params.push(`%${programa}%`);
+  }
+
+  const where = conditions.length
+    ? `WHERE ${conditions.join(' AND ')}`
+    : '';
 
   return db.prepare(`
     SELECT *
     FROM registros
-    WHERE nombres LIKE ?
-       OR apellidos LIKE ?
-       OR documento LIKE ?
-       OR correo LIKE ?
-       OR programa LIKE ?
+    ${where}
     ORDER BY datetime(actualizado_en) DESC, id DESC
-  `).all(like, like, like, like, like);
+  `).all(...params);
 }
 
 function getRecord(id) {
