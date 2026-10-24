@@ -16,6 +16,7 @@ const btnCancel = document.getElementById('btn-cancel');
 const btnResetFilters = document.getElementById('btn-clear-filters');
 const filterCondicion = document.getElementById('filter-condicion');
 const filterPrograma = document.getElementById('filter-programa');
+const btnExport = document.getElementById('btn-export');
 const recordId = document.getElementById('record-id');
 
 const fields = [
@@ -429,6 +430,43 @@ btnResetFilters?.addEventListener('click', clearFilters);
 // ======================================================
 // EDITAR REGISTRO
 // ======================================================
+function csvCell(value) {
+  let text = String(value ?? '');
+  if (/^[=+@\-\t\r]/.test(text)) text = `'${text}`;
+  return `"${text.replaceAll('"', '""')}"`;
+}
+
+btnExport.addEventListener('click', async () => {
+  btnExport.disabled = true;
+  try {
+    const search = searchInput.value.trim();
+    const query = search ? `?search=${encodeURIComponent(search)}` : '';
+    const { ok, body } = await api(`/api/registros${query}`);
+    if (!ok) throw new Error('No se pudo cargar el listado.');
+
+    const columns = [
+      ['Nombres', 'nombres'], ['Apellidos', 'apellidos'], ['Documento', 'documento'],
+      ['Correo', 'correo'], ['Teléfono', 'telefono'], ['Condición', 'condicion'],
+      ['Programa', 'programa'], ['Observaciones', 'observaciones'], ['Creado', 'creado_en']
+    ];
+    const rows = [columns.map(([label]) => csvCell(label)).join(',')];
+    (body.items || []).forEach((item) => {
+      rows.push(columns.map(([, key]) => csvCell(item[key])).join(','));
+    });
+
+    const blob = new Blob([`\uFEFF${rows.join('\r\n')}`], { type: 'text/csv;charset=utf-8' });
+    const url = URL.createObjectURL(blob);
+    const link = document.createElement('a');
+    link.href = url;
+    link.download = `registros-${new Date().toISOString().slice(0, 10)}.csv`;
+    link.click();
+    URL.revokeObjectURL(url);
+  } catch (error) {
+    showToast(error.message || 'No se pudo exportar el listado.', 'err');
+  } finally {
+    btnExport.disabled = false;
+  }
+});
 
 tbody.addEventListener('click', async (event) => {
   const button = event.target.closest('button[data-action="edit"]');
