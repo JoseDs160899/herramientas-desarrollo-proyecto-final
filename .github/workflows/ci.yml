@@ -1,0 +1,52 @@
+name: CI
+
+on:
+  push:
+    branches: [main, 'feature/**']
+  pull_request:
+    branches: [main]
+
+jobs:
+  validar:
+    name: Validar código
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout del repositorio
+        uses: actions/checkout@v4
+
+      - name: Configurar Node.js 22
+        uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+          cache: npm
+
+      - name: Instalar dependencias
+        run: npm ci
+
+      - name: Verificar estructura del proyecto
+        run: |
+          required=(
+            package.json
+            src/server.js
+            src/db.js
+            src/validation.js
+            public/index.html
+            public/app.js
+            public/styles.css
+            tests/validation.test.js
+            README.md
+          )
+          missing=0
+          for path in "${required[@]}"; do
+            if [ ! -e "$path" ]; then
+              echo "::error::Falta el archivo requerido: $path"
+              missing=1
+            else
+              echo "OK $path"
+            fi
+          done
+          exit $missing
+
+      - name: Ejecutar pruebas automatizadas
+        run: npm test

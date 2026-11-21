@@ -1,0 +1,67 @@
+name: CD
+
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+concurrency:
+  group: cd-production
+  cancel-in-progress: true
+
+jobs:
+  desplegar:
+    name: Desplegar en cloud
+    runs-on: ubuntu-latest
+    environment:
+      name: cloud
+      url: http://167.148.33.105:3000
+
+    steps:
+      - name: Checkout del repositorio
+        uses: actions/checkout@v4
+
+      - name: Desplegar por SSH en el servidor
+        uses: appleboy/ssh-action@v1.2.0
+        with:
+          host: ${{ secrets.SSH_HOST }}
+          username: ${{ secrets.SSH_USER }}
+          key: ${{ secrets.SSH_PRIVATE_KEY }}
+          port: ${{ secrets.SSH_PORT }}
+          script_stop: true
+          script: |
+            set -euo pipefail
+            APP_DIR="/home/deploy/apps/herramientas-desarrollo-proyecto-final"
+            REPO_URL="https://github.com/JoseDs160899/herramientas-desarrollo-proyecto-final.git"
+
+            mkdir -p /home/deploy/apps
+            if [ ! -d "$APP_DIR/.git" ]; then
+              git clone "$REPO_URL" "$APP_DIR"
+            fi
+
+            cd "$APP_DIR"
+            git fetch origin main
+            git reset --hard origin/main
+            npm ci --omit=dev
+
+            export HOST=0.0.0.0
+            export PORT=3000
+
+            if pm2 describe registrau >/dev/null 2>&1; then
+              pm2 restart ecosystem.config.cjs --update-env
+            else
+              pm2 start ecosystem.config.cjs
+            fi
+            pm2 save
+
+            sleep 2
+            curl -fsS "http://127.0.0.1:3000/api/health"
+            echo
+            pm2 status registrau
+
+      - name: Verificar URL pública
+        run: |
+          sleep 3
+          curl -fsS "http://167.148.33.105:3000/api/health"
+          echo
+          echo "Despliegue verificado en http://167.148.33.105:3000"

@@ -117,6 +117,41 @@ Las pruebas permiten comprobar los comportamientos definidos por el proyecto, in
 
 Antes de publicar una versión, también se recomienda verificar manualmente el registro, la búsqueda, la edición y la exportación de información.
 
+## 9.1. Integración Continua (CI)
+
+El repositorio incluye un workflow de GitHub Actions en `.github/workflows/ci.yml`.
+
+Se ejecuta en `push` y `pull_request` hacia `main` y realiza:
+
+1. Checkout del código.
+2. Configuración de Node.js 22.
+3. Instalación de dependencias con `npm ci`.
+4. Verificación de la estructura de archivos requeridos.
+5. Ejecución de `npm test`.
+
+Historial de ejecuciones:
+
+https://github.com/JoseDs160899/herramientas-desarrollo-proyecto-final/actions
+
+## 9.2. Entrega Continua (CD) y cloud
+
+El workflow `.github/workflows/cd.yml` despliega automáticamente en el servidor cloud cuando hay cambios en `main` (también se puede lanzar manualmente con `workflow_dispatch`).
+
+El despliegue:
+
+1. Se conecta por SSH al usuario `deploy`.
+2. Actualiza el código en `/home/deploy/apps/herramientas-desarrollo-proyecto-final`.
+3. Instala dependencias y reinicia la app con PM2 (`registrau`).
+4. Verifica el endpoint `/api/health`.
+
+URL del entorno de prueba en cloud:
+
+```text
+http://167.148.33.105:3000
+```
+
+Documentación detallada: `docs/CICD_APF3.md`.
+
 ## 10. API del sistema
 
 La aplicación dispone de rutas HTTP para consultar y administrar registros. Entre las rutas previstas se encuentran:

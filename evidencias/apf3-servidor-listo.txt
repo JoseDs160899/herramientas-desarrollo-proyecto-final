@@ -1,0 +1,30 @@
+=== EVIDENCIA APF3: servidor listo ===
+Fecha: Sat Nov 21 12:51:20 PM UTC 2026
+Host: vm-175d6844-838c-4cdb-83fe-274152d9b05f
+Usuario: deploy
+
+-- Node / npm / PM2 --
+v22.23.5
+10.9.9
+7.1.2
+{ msg: 'pong' }
+
+-- Apps dir --
+total 8
+drwxr-xr-x 2 deploy deploy 4096 Nov 21 12:46 .
+drwx------ 5 deploy deploy 4096 Nov 21 12:49 ..
+
+-- Firewall (sudo) --
+Status: active
+
+To                         Action      From
+--                         ------      ----
+OpenSSH                    ALLOW       Anywhere                  
+3000/tcp                   ALLOW       Anywhere                  
+OpenSSH (v6)               ALLOW       Anywhere (v6)             
+3000/tcp (v6)              ALLOW       Anywhere (v6)             
+
+
+-- PM2 service --
+enabled
+OK
