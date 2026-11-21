@@ -213,8 +213,7 @@ function fillForm(item) {
   recordId.value = item.id ?? '';
 }
 
-function resetFormMode() {
-  form.reset();
+function syncNewFormMode() {
   recordId.value = '';
 
   if (formTitle) formTitle.textContent = 'Nueva ficha';
@@ -223,6 +222,17 @@ function resetFormMode() {
 
   clearErrors();
   clearToast();
+}
+
+function resetFormMode() {
+  // Limpia campos sin disparar el evento native "reset"
+  // (evita un bucle con el listener de Limpiar).
+  fields.forEach((name) => {
+    const input = document.getElementById(name);
+    if (input) input.value = '';
+  });
+
+  syncNewFormMode();
 }
 
 function editMode(item) {
@@ -503,12 +513,16 @@ form.addEventListener('submit', async (event) => {
 // ======================================================
 
 form.addEventListener('reset', () => {
-  setTimeout(() => {
-    resetFormMode();
-  }, 0);
+  // El navegador ya limpió los inputs; solo sincronizamos el modo UI.
+  // No volver a llamar form.reset() aquí (provocaba un bucle infinito).
+  syncNewFormMode();
 });
 
 btnCancel?.addEventListener('click', () => {
+  resetFormMode();
+});
+
+document.getElementById('btn-reset')?.addEventListener('click', () => {
   resetFormMode();
 });
 
