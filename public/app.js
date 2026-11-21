@@ -123,6 +123,84 @@ function readForm() {
   return data;
 }
 
+// ======================================================
+// NUEVA VALIDACIÓN DEL FRONTEND
+// ISSUE-01: Validación de campos obligatorios
+// ======================================================
+
+function validarFormularioLocal(data) {
+  const errores = {};
+
+  // Validar nombres obligatorios
+  if (!data.nombres) {
+    errores.nombres = 'Los nombres son obligatorios.';
+  }
+
+  // Validar apellidos obligatorios
+  if (!data.apellidos) {
+    errores.apellidos = 'Los apellidos son obligatorios.';
+  }
+
+  // Validar documento
+  if (!data.documento) {
+    errores.documento = 'El documento es obligatorio.';
+  } else if (!/^[0-9]{8,12}$/.test(data.documento)) {
+    errores.documento =
+      'El documento debe contener entre 8 y 12 dígitos.';
+  }
+
+  // Validar correo electrónico
+  if (!data.correo) {
+    errores.correo = 'El correo es obligatorio.';
+  } else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(data.correo)) {
+    errores.correo =
+      'Ingrese un correo electrónico válido.';
+  }
+
+  // Validar teléfono si fue ingresado
+  if (
+    data.telefono &&
+    !/^[0-9+()\-\s]{7,20}$/.test(data.telefono)
+  ) {
+    errores.telefono = 'Ingrese un teléfono válido.';
+  }
+
+  // Validar condición del estudiante o postulante
+  if (
+    !['ESTUDIANTE', 'POSTULANTE'].includes(data.condicion)
+  ) {
+    errores.condicion =
+      'Seleccione Estudiante o Postulante.';
+  }
+
+  // Validar longitud máxima de los campos
+  if (data.nombres.length > 80) {
+    errores.nombres = 'Máximo 80 caracteres.';
+  }
+
+  if (data.apellidos.length > 80) {
+    errores.apellidos = 'Máximo 80 caracteres.';
+  }
+
+  if (data.correo.length > 120) {
+    errores.correo = 'Máximo 120 caracteres.';
+  }
+
+  if (data.programa.length > 120) {
+    errores.programa = 'Máximo 120 caracteres.';
+  }
+
+  if (data.observaciones.length > 500) {
+    errores.observaciones = 'Máximo 500 caracteres.';
+  }
+
+  return errores;
+}
+
+// ======================================================
+// COMPLETAR Y REINICIAR FORMULARIO
+// ======================================================
+
 function fillForm(item) {
   fields.forEach((name) => {
     const input = document.getElementById(name);
@@ -335,6 +413,7 @@ async function refresh() {
 
 // ======================================================
 // GUARDAR Y ACTUALIZAR REGISTROS
+// VALIDACIÓN FRONTEND INTEGRADA - ISSUE-01
 // ======================================================
 
 form.addEventListener('submit', async (event) => {
@@ -344,6 +423,36 @@ form.addEventListener('submit', async (event) => {
   clearToast();
 
   const payload = readForm();
+
+  // ================================================
+  // VALIDACIÓN ANTES DE ENVIAR AL SERVIDOR
+  // ================================================
+
+  const erroresLocales = validarFormularioLocal(payload);
+
+  if (Object.keys(erroresLocales).length > 0) {
+    // Mostrar errores en los campos
+    setErrors(erroresLocales);
+
+    // Mostrar mensaje general al usuario
+    showToast(
+      'Corrige los campos señalados antes de guardar.',
+      'err'
+    );
+
+    // Enfocar el primer campo incorrecto
+    const primerCampo = Object.keys(erroresLocales)[0];
+
+    document.getElementById(primerCampo)?.focus();
+
+    // Impedir el envío de datos inválidos
+    return;
+  }
+
+  // ================================================
+  // GUARDAR O ACTUALIZAR REGISTRO
+  // ================================================
+
   const id = recordId.value.trim();
   const editing = Boolean(id);
 
@@ -428,48 +537,88 @@ filterPrograma?.addEventListener('input', () => {
 btnResetFilters?.addEventListener('click', clearFilters);
 
 // ======================================================
-// EDITAR REGISTRO
+// EXPORTACIÓN CSV
 // ======================================================
+
 function csvCell(value) {
   let text = String(value ?? '');
-  if (/^[=+@\-\t\r]/.test(text)) text = `'${text}`;
+
+  if (/^[=+@\-\t\r]/.test(text)) {
+    text = `'${text}`;
+  }
+
   return `"${text.replaceAll('"', '""')}"`;
 }
 
 btnExport.addEventListener('click', async () => {
   btnExport.disabled = true;
+
   try {
     const search = searchInput.value.trim();
-    const query = search ? `?search=${encodeURIComponent(search)}` : '';
+    const query = search
+      ? `?search=${encodeURIComponent(search)}`
+      : '';
+
     const { ok, body } = await api(`/api/registros${query}`);
-    if (!ok) throw new Error('No se pudo cargar el listado.');
+
+    if (!ok) {
+      throw new Error('No se pudo cargar el listado.');
+    }
 
     const columns = [
-      ['Nombres', 'nombres'], ['Apellidos', 'apellidos'], ['Documento', 'documento'],
-      ['Correo', 'correo'], ['Teléfono', 'telefono'], ['Condición', 'condicion'],
-      ['Programa', 'programa'], ['Observaciones', 'observaciones'], ['Creado', 'creado_en']
+      ['Nombres', 'nombres'],
+      ['Apellidos', 'apellidos'],
+      ['Documento', 'documento'],
+      ['Correo', 'correo'],
+      ['Teléfono', 'telefono'],
+      ['Condición', 'condicion'],
+      ['Programa', 'programa'],
+      ['Observaciones', 'observaciones'],
+      ['Creado', 'creado_en']
     ];
-    const rows = [columns.map(([label]) => csvCell(label)).join(',')];
+
+    const rows = [
+      columns.map(([label]) => csvCell(label)).join(',')
+    ];
+
     (body.items || []).forEach((item) => {
-      rows.push(columns.map(([, key]) => csvCell(item[key])).join(','));
+      rows.push(
+        columns.map(([, key]) => csvCell(item[key])).join(',')
+      );
     });
 
-    const blob = new Blob([`\uFEFF${rows.join('\r\n')}`], { type: 'text/csv;charset=utf-8' });
+    const blob = new Blob(
+      [`\uFEFF${rows.join('\r\n')}`],
+      { type: 'text/csv;charset=utf-8' }
+    );
+
     const url = URL.createObjectURL(blob);
     const link = document.createElement('a');
+
     link.href = url;
-    link.download = `registros-${new Date().toISOString().slice(0, 10)}.csv`;
+    link.download =
+      `registros-${new Date().toISOString().slice(0, 10)}.csv`;
+
     link.click();
     URL.revokeObjectURL(url);
   } catch (error) {
-    showToast(error.message || 'No se pudo exportar el listado.', 'err');
+    showToast(
+      error.message || 'No se pudo exportar el listado.',
+      'err'
+    );
   } finally {
     btnExport.disabled = false;
   }
 });
 
+// ======================================================
+// EDITAR REGISTRO
+// ======================================================
+
 tbody.addEventListener('click', async (event) => {
-  const button = event.target.closest('button[data-action="edit"]');
+  const button = event.target.closest(
+    'button[data-action="edit"]'
+  );
 
   if (!button) return;
 
