@@ -160,7 +160,7 @@ sudo ufw status numbered
 | Workflow CI GitHub Actions | Listo (`.github/workflows/ci.yml`) |
 | Workflow CD / publicación | Listo (`.github/workflows/cd.yml`) |
 | Secretos GitHub (`SSH_*`) | Listo |
-| App desplegada y URL verificada | Tras el primer push a `main` |
+| App desplegada y URL verificada | Listo (`http://167.148.33.105:3000`) |
 | README actualizado con CI/CD/URL | Listo |
 
 ## 9. Relación con el informe APF3

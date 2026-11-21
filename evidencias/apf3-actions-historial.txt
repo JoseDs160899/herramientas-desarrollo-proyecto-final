@@ -1,0 +1,4 @@
+completed	success	fix: estabilizar workflow CD y arranque PM2 en fork	CD	main	push	44906640058	17s	2026-11-21T13:00:09Z
+completed	success	fix: estabilizar workflow CD y arranque PM2 en fork	CI	main	push	44906640004	16s	2026-11-21T13:00:09Z
+completed	success	feat: agregar CI/CD con GitHub Actions y despliegue cloud	CI	main	push	44906465551	9s	2026-11-21T12:57:51Z
+completed	failure	feat: agregar CI/CD con GitHub Actions y despliegue cloud	CD	main	push	44906465547	9s	2026-11-21T12:57:51Z
