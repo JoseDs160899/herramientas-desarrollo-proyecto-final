@@ -29,8 +29,11 @@ jobs:
           key: ${{ secrets.SSH_PRIVATE_KEY }}
           port: ${{ secrets.SSH_PORT }}
           script_stop: true
+          command_timeout: 10m
           script: |
-            set -euo pipefail
+            set -e
+            export HOME=/home/deploy
+            export PATH=/usr/local/bin:/usr/bin:/bin
             APP_DIR="/home/deploy/apps/herramientas-desarrollo-proyecto-final"
             REPO_URL="https://github.com/JoseDs160899/herramientas-desarrollo-proyecto-final.git"
 
@@ -47,17 +50,14 @@ jobs:
             export HOST=0.0.0.0
             export PORT=3000
 
-            if pm2 describe registrau >/dev/null 2>&1; then
-              pm2 restart ecosystem.config.cjs --update-env
-            else
-              pm2 start ecosystem.config.cjs
-            fi
-            pm2 save
+            /usr/bin/pm2 delete registrau >/dev/null 2>&1 || true
+            /usr/bin/pm2 start ecosystem.config.cjs
+            /usr/bin/pm2 save
 
-            sleep 2
+            sleep 3
             curl -fsS "http://127.0.0.1:3000/api/health"
             echo
-            pm2 status registrau
+            /usr/bin/pm2 status registrau
 
       - name: Verificar URL pública
         run: |
